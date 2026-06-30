@@ -3,8 +3,7 @@ from tkinter import ttk, messagebox
 import sqlite3
 
 
-from database import init_db, get_all_movies
-
+from database import init_db, get_all_movies, add_movie_to_db
 
 # =================================================
 # 2. GUI APPLICATION CLASS
@@ -93,16 +92,14 @@ class CineVaultApp:
     # 3. CORE DATABASE OPERATIONS (CRUD)
     # ===========================================
     def refresh_table(self):
-        """Fetches items from database and builds the visual list rows."""
+        """Fetches movies from database and displays them in the table."""
         self.movie_table.delete(*self.movie_table.get_children())
-        conn = sqlite3.connect("movies_database.db")
-        cursor = conn.cursor()
-        cursor.execute("Select * FROM movies")
-        rows = cursor.fetchall()
+        
+        rows = get_all_movies()
+
         for row in rows:
             self.movie_table.insert("", "end", values=row)
 
-        conn.close()
 
     def add_movie(self):
         """Validates entry fields and saves a row to SQLite database"""
@@ -119,15 +116,12 @@ class CineVaultApp:
                 messagebox.showerror("Error", "Year must be a number.")
                 return
 
-        conn = sqlite3.connect("movies_database.db")
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO movies (title, director, year, genre) VALUES (?, ?, ?, ?)",
-            (self.var_title.get(), self.var_director.get(), year, self.var_genre.get())
-
+        add_movie_to_db(
+            self.var_title.get(),
+            self.var_director.get(),
+            year,
+            self.var_genre.get()
         )
-        conn.commit()
-        conn.close()
 
         self.refresh_table()
         self.clear_entries()
