@@ -3,29 +3,13 @@ from tkinter import ttk, messagebox
 import sqlite3
 
 
-# ==================================================
-# 1. DATABASE SETUP
-# ==================================================
-def init_db():
-    """Connects to SQLite and creates the movies table if it doesn't exist."""
-    conn = sqlite3.connect("movies_database.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS movies (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            director TEXT,
-            year INTEGER,
-            genre TEXT
-        )
-        """)
-    conn.commit()
-    conn.close()
+from database import init_db
+
 
 # =================================================
 # 2. GUI APPLICATION CLASS
 # =================================================
-class MovieApp:
+class CineVaultApp:
     def __init__(self, root):
         self.root = root
         self.root.title("My Movie Database")
@@ -229,7 +213,7 @@ class MovieApp:
 if __name__ == "__main__":
     init_db() # Verify backend file exists
     root = tk.Tk()
-    app = MovieApp(root)
+    app = CineVaultApp(root)
     root.mainloop()
 
 
