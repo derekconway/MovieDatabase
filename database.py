@@ -48,3 +48,13 @@ def delete_movie_from_db(movie_id):
     cursor.execute("DELETE FROM movies WHERE id = ?", (movie_id,))
     conn.commit()
     conn.close()
+
+def search_movies_by_title(title):
+    """Returns movies that match the title search."""
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM movies WHERE title LIKE ?", ('%' + title + '%',))
+    results = cursor.fetchall()
+    conn.close()
+    return results

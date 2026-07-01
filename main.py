@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 import sqlite3
 
 
-from database import init_db, get_all_movies, add_movie_to_db, delete_movie_from_db
+from database import init_db, get_all_movies, add_movie_to_db, delete_movie_from_db, search_movies_by_title
 
 # =================================================
 # 2. GUI APPLICATION CLASS
@@ -171,26 +171,18 @@ class CineVaultApp:
             messagebox.showerror("Error", "The Movie Title field is required to search.")
             return
 
-        try:
-            conn = sqlite3.connect("movies_database.db")
-            cursor = conn.cursor()
+        result = search_movies_by_title(self.var_title.get())
 
-            cursor.execute("SELECT * FROM movies WHERE title LIKE ?", ('%' + self.var_title.get() + '%',))
-            result = cursor.fetchall()
-            conn.close()
+        if result:
+            self.movie_table.delete(*self.movie_table.get_children())
 
-            if result:
-                self.movie_table.delete(*self.movie_table.get_children())
+            for row in result:
+                self.movie_table.insert("", "end", values=row)
 
-                for row in result:
-                    self.movie_table.insert("", "end", values=row)
+        else:
+            messagebox.showerror("Error", "The movie is not in the database.")
+            self.clear_entries()
 
-            else:
-                messagebox.showerror("Error", "The movie is not in the database.")
-                self.clear_entries()
-
-        except Exception as e:
-            messagebox.showerror("Error", f"Database error: {e}")
 
     def reset_search(self):
         self.clear_entries()
